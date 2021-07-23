@@ -3,6 +3,8 @@ from pythonosc.osc_server import BlockingOSCUDPServer
 
 
 def print_handler(address, *args):
+    for elem in args:
+        print("->", elem, type(elem))
     print(f"{address}: {args}")
 
 

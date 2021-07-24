@@ -4,11 +4,11 @@ import serial
 
 ser = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=.1)
 
-
 def print_handler(address, *args):
     for elem in args:
-        print("->", elem, type(elem))
-        ser.write(elem)
+        if elem:
+            print("->", elem, type(elem))
+            ser.write(elem.encode())
     print(f"{address}: {args}")
 
 
@@ -17,7 +17,7 @@ def default_handler(address, *args):
 
 
 dispatcher = Dispatcher()
-dispatcher.map("/something/*", print_handler)
+dispatcher.map("*", print_handler)
 dispatcher.set_default_handler(default_handler)
 
 ip = "127.0.0.1"

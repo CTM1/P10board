@@ -22,15 +22,8 @@ void scan_module()
   led_module.scanDisplayBySPI(); //Check incoming data from Arduino to call for interrupt.
 }
 
-void loop()
+void print_scrolling_text(char* c, int speed)
 {
-  if (Serial.available() > 0)
-  {
-    String inByte = Serial.readString();
-    char* c = inByte.c_str();
-    
-    //Serial.write(inByte);
-
     led_module.clearScreen(true);
     led_module.selectFont(FONT);
     led_module.drawMarquee(c, strlen(c), (32 * ROW), 0);  // void drawMarquee( const char* bChars, byte length, int left, int top, byte fgcolour, byte bgcolour);
@@ -38,13 +31,28 @@ void loop()
     long start = millis();
     long timming = start;
     boolean flag = false;
-    while (!flag)
+    while (!flag && Serial.available() ==  0)
     {
-      if ((timming + 50) < millis()) 
+      if ((timming + speed) < millis()) 
       {
         flag = led_module.stepMarquee(-1, 0);
         timming = millis();
       }
     }
+}
+
+void loop()
+{
+  if (Serial.available() == 0)
+  {
+    print_scrolling_text("https://192.168.43.118:8080", 30);
+  }
+  
+  if (Serial.available() > 0)
+  {
+    String inByte = Serial.readString();
+    char* c = inByte.c_str();
+    
+    print_scrolling_text(c, 30);
   }
 }

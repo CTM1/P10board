@@ -19,23 +19,25 @@ def default_handler(address, *args):
     print(f"DEFAULT {address}: {args}")
 
 def scroll_handler(address, *args):
-    str2Send = "0,"
+    charAsIntArray = [0]
     for elem in args:
         if is_string(elem):
-            str2Send += elem
-        print("->", elem, type(elem))
-    print("Formatted string sent: " + str2Send)
-    ser.write(str2Send.encode())
+            for char in elem:
+                charAsIntArray.append(ord(char))
+        print("->", elem, type(elem)) 
+        ser.write(bytearray(charAsIntArray))
 
 def draw_handler(address, *args):
-    str2Send = "1,"
+    values = []
     for elem in args:
-        elem = int(elem)
-        str2Send += str(elem)
-        str2Send += ","
+        values.append(elem)
         print("->", elem, type(elem))
-    print("Formatted string sent" + str2Send)
-    ser.write(str2Send.encode())
+    print("Values sent :")
+    print(values)
+    print("Bytearray sent: ")
+    print(bytearray(values))
+    ser.write(bytearray(values))
+    print(ser.read())
 
 dispatcher = Dispatcher()
 dispatcher.map("/input/draw", draw_handler)

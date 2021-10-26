@@ -13,7 +13,7 @@ DMD led_module(ROW, COL);
 void setup()
 {
   pinMode(13, OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(2000000);
   Timer1.initialize(2000);
   Timer1.attachInterrupt(scan_module);
 }
@@ -44,41 +44,37 @@ void print_scrolling_text(char* c, int speed)
 
 void loop()
 {
-  if (Serial.available() == 0)
-    print_scrolling_text("https://192.168.43.118:8080", 30);
-
+  if (Serial.available() == 0) //print_scrolling_text("https://192.168.43.118:8080", 30);
+     led_module.writePixel(1, 1, GRAPHICS_TOGGLE,1);
   
   if (Serial.available() > 0)
   {
+    digitalWrite(13, HIGH);
     String request = Serial.readString();
     char* request_id  = request.c_str();
-    char* strToken =  strtok(request_id, ",");
+    char* strToken = strtok(request_id, ",");
 
-    switch(request_id[0])
+    
+    Serial.print(request.charAt(0));
+    if (request.charAt(0) == '0')
     {
-      case '0': //Scrolling text
-        strToken = strtok(NULL, ",");
-        char* c = strToken;
+      strToken = strtok(NULL, ",");
+      char* c = strToken;
         
-        for (int i = 0; i < 5; i++)
-          print_scrolling_text(c, 30);
-        break;
-        
-      case '1': //Drawing //1,12,24 //1\012\024 while !null
-        strToken = strtok(request_id, ",");
+      for (int i = 0; i < 5; i++)
+        print_scrolling_text(c, 30);
+    }
+    
+    else
+    { //Drawing
         int x = 0;
         int y = 0;
-        
         strToken = strtok(NULL, ",");
         x = atoi(strToken);
         strToken = strtok(NULL, ",");
         y = atoi(strToken);
-        
-        led_module.writePixel(x,y,GRAPHICS_NORMAL,1);
-        
-        break;
-      default:
-        break;
-    }
+        led_module.writePixel(x,y,GRAPHICS_TOGGLE,1);
+     }
+     digitalWrite(13, HIGH);
+   }
   }
-}
